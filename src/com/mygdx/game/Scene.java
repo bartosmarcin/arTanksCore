@@ -9,144 +9,30 @@ import com.badlogic.gdx.graphics.Camera;
 public class Scene {
 	private volatile static Mat cameraRvec;
 	private volatile static Mat cameraTvec;
-	private static Camera cam;
-	
-	
+		
 	public static boolean doneLoading = false;
-	
-	private static double[] tmp = new double[3];
-	
-	public static void setCamera(Camera c){
-		cam = c;
-	}
-	
-	public static float[] getTransform(){
 		
-		
-		
+
+	private static Mat rot;
+	private static float[] mat = new float[16];
+	public static float[] getTransform(){		
 		if(cameraRvec == null || cameraTvec == null)
 			return null;
-
-		double[] tmpR = new double[3];
-		double[] tmpT = new double[3];
 		
-		cameraRvec.get(0, 0, tmpR);
-		cameraTvec.get(0, 0, tmpT);
-//		
-//		float[] lol = new float[6];
-//		for(int i=0; i<3; i++){
-//			lol[i] = (float)tmpR[i];
-//			lol[i+3] = (float)tmpT[i];
-//		}
-//		
-//		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		Mat rot = new Mat();
 		Calib3d.Rodrigues(cameraRvec, rot);	
-//		Mat Ct = new Mat();
-//		Mat Cr = rot.t();
-//		try{
-//			
-////			Core.gemm(rot.t().inv().t(), cameraTvec, -1, new Mat(), 0, Ct, 0);
-//			Core.gemm(rot.t(), cameraTvec, 1, new Mat(), 0, Ct, 0);
-//		}
-//		catch(Exception e){
-//			e.getCause();
-//		}
-//		rot = rot.t();
+		mat[0] = (float)rot.get(0, 0)[0]; mat[1] = -(float)rot.get(1,0)[0]; mat[2] = -(float)rot.get(2, 0)[0]; mat[3] = 0f;
+		mat[4] = (float)rot.get(0, 1)[0]; mat[5] = -(float)rot.get(1,1)[0]; mat[6] = -(float)rot.get(2, 1)[0]; mat[7] = 0f;
+		mat[8] = (float)rot.get(0, 2)[0]; mat[9] = -(float)rot.get(1,2)[0]; mat[10] = -(float)rot.get(2, 2)[0]; mat[11] = 0f;
+		mat[12] = (float)cameraTvec.get(0, 0)[0]*2.3f; mat[13] = -(float)cameraTvec.get(1, 0)[0]*2.3f; mat[14] = -(float)cameraTvec.get(2, 0)[0]; mat[15] = 1f;
 
-//		float[] mat = {
-//		(float)rot.get(0, 0)[0], (float)rot.get(0,1)[0], (float)rot.get(0, 2)[0], (float)cameraTvec.get(0, 0)[0],
-//		(float)rot.get(1, 0)[0], (float)rot.get(1,1)[0], (float)rot.get(1, 2)[0], (float)cameraTvec.get(1, 0)[0],
-//		(float)rot.get(2, 0)[0], (float)rot.get(2,1)[0], (float)rot.get(2, 2)[0], (float)cameraTvec.get(2, 0)[0],
-//		0,				  0,			   0,				 1
-//};		
-
-//		transponowana		
-//		float[] mat = {
-//				(float)rot.get(0, 0)[0], 		(float)rot.get(1,0)[0],			(float)rot.get(2, 0)[0], 		0,
-//				(float)rot.get(0, 1)[0], 		(float)rot.get(1,1)[0], 		(float)rot.get(2, 1)[0], 		0,
-//				(float)rot.get(0, 2)[0], 		(float)rot.get(1,2)[0], 		(float)rot.get(2, 2)[0], 		0,
-//				(float)cameraTvec.get(0, 0)[0], (float)cameraTvec.get(1, 0)[0],	(float)cameraTvec.get(2, 0)[0],	1
-//		};
-//		
-//		WIERD SHIET
-//		float[] mat = {
-//		(float)rot.get(0, 0)[0], 		(float)rot.get(2,0)[0],			(float)rot.get(1, 0)[0], 		0,
-//		(float)rot.get(0, 1)[0], 		(float)rot.get(2,1)[0], 		(float)rot.get(1, 1)[0], 		0,
-//		(float)rot.get(0, 2)[0], 		(float)rot.get(2,2)[0], 		(float)rot.get(1, 2)[0], 		0,
-//		(float)cameraTvec.get(0, 0)[0], (float)cameraTvec.get(2, 0)[0],	-(float)cameraTvec.get(1, 0)[0],	1
-//};		//		
-		//TRANS ONLY
-//		float[] mat = {
-//				(float)rot.get(0, 0)[0], 		(float)rot.get(0,1)[0],			(float)rot.get(0, 2)[0], 		0,
-//				-(float)rot.get(1, 0)[0], 		-(float)rot.get(1,1)[0], 		-(float)rot.get(1, 2)[0], 		0,
-//				-(float)rot.get(2, 0)[0], 		-(float)rot.get(2,1)[0], 		-(float)rot.get(2, 2)[0], 		0,
-//				(float)cameraTvec.get(0, 0)[0], (float)cameraTvec.get(2, 0)[0],	(float)cameraTvec.get(1, 0)[0] ,	1
-//		};		cp 
-//
-		float[] mat = {
-				(float)rot.get(0, 0)[0], 		-(float)rot.get(1,0)[0],			-(float)rot.get(2, 0)[0], 		0,
-				(float)rot.get(0, 1)[0], 		-(float)rot.get(1,1)[0], 			-(float)rot.get(2, 1)[0], 		0,
-				(float)rot.get(0, 2)[0], 		-(float)rot.get(1,2)[0], 			-(float)rot.get(2, 2)[0], 		0,
-				(float)cameraTvec.get(0, 0)[0]*2.3f , -(float)cameraTvec.get(1, 0)[0]*2.3f,	-(float)cameraTvec.get(2, 0)[0] ,	1
-		};		
-//		float[] mat = {
-//				(float)rot.get(0, 0)[0], 		-(float)rot.get(1,0)[0],			-(float)rot.get(2, 0)[0], 		0,
-//				(float)rot.get(0, 1)[0], 		-(float)rot.get(1,1)[0], 			-(float)rot.get(2, 1)[0], 		0,
-//				(float)rot.get(0, 2)[0], 		-(float)rot.get(1,2)[0], 			-(float)rot.get(2, 2)[0], 		0,
-//				(float)Ct.get(0, 0)[0], -(float)Ct.get(1, 0)[0],	-(float)Ct.get(2, 0)[0] - 20 ,	1
-//		};		
-
-//		float[] mat = {
-//				(float)Cr.get(0, 0)[0], -(float)Cr.get(1, 0)[0], -(float)Cr.get(2, 0)[0], 		0,
-//				(float)Cr.get(0, 1)[0], -(float)Cr.get(1, 1)[0], -(float)Cr.get(2, 1)[0], 		0,
-//				(float)Cr.get(0, 2)[0], -(float)Cr.get(1, 2)[0], -(float)Cr.get(2, 2)[0], 		0,
-//				(float)Ct.get(0, 0)[0], -(float)Ct.get(1, 0)[0], -(float)Ct.get(2, 0)[0] - 20 ,	1
-//		};		
-//		
-
-
-		
 		return mat;
 	}
-	
-	public void initOpencv(){
 		
-	}
-	
-	
-	
-	
-	
 	public static void setCameraPos(Mat tvec, Mat rvec){
 		cameraTvec = tvec;
 		cameraRvec = rvec;
-		
-//		
-//		Mat camMat = new Mat(4,4,CvType.CV_32FC1);
-//		for(int i=0; i<3; i++){
-//			for(int j=0; j<3; j++)
-//				camMat.put(i, j, rot.get(i, j));
-//		}
-//		for(int i=0; i<3; i++)
-//			camMat.put(i, 3, tvec.get(0, i));
-//		camMat.inv();
-		
-//		cameraTvec = tvec;
-//		cameraTvec.get(0, 0, tmp);
-//		//cam.projection.setToTranslation((float)tmp[0], (float)tmp[1], (float)tmp[2]);
-//		cam.
-//		cam.update();
-//		cameraRvec = rvec;
+		if(rot == null)
+			rot = new Mat();
 	}
 
 
