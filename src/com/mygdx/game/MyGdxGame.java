@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 
@@ -53,31 +54,14 @@ public class MyGdxGame extends ApplicationAdapter {
 		environment.add(new DirectionalLight().set(8f, 8f, 8f, -20f, -40f, -20f));
 
 		modelBatch = new ModelBatch();
-		// cam = new MyCamera(67, Gdx.graphics.getWidth(),
-		// Gdx.graphics.getHeight());
+		
 		cam = new MyCamera(67, viewPortWidth, viewPortHeight);
-//		cam.position.set(0f, 0f, 0f);
-		// cam.lookAt(0, 0, 0);
-//		cam.near = 1f;
-//		cam.far = 300f;
-//		cam.update();
-
-//		cam.up.set(0.0f, -1.0f, 0.0f); // Up vector
-//		cam.lookAt(0.0f, 0.0f, 1.0f); // Forward vector
-		cam.far = 10000.0f; // Far clipping plane distance
-		cam.near = 0.1f; // Near clipping plane distance
-//		cam.update();
-
+		cam.far = 10000.0f;
+		cam.near = 0.1f;
+		
 		assets = new AssetManager();
 		assets.load("data/cube.g3db", Model.class);
 		loading = true;
-
-		// ModelLoader loader = new ObjLoader();
-		// tank = loader.loadModel(Gdx.files.internal("data/ship.obj"));
-		// instance = new ModelInstance(tank);
-
-		// camController = new CameraInputController(cam);
-		// Gdx.input.setInputProcessor(camController);
 	}
 
 	private void doneLoading() {
@@ -86,16 +70,19 @@ public class MyGdxGame extends ApplicationAdapter {
 		
 		ModelInstance tankInstance = new ModelInstance(tank);
 		instances.add(tankInstance);
+		
+		Gdx.input.setInputProcessor(new GestureDetector(new InputHandler(tankInstance)));
+		
+		
 		loading = false;
-//		Gdx.input.setInputProcessor(new InputHandler(tankInstance));
 		Scene.doneLoading = true;
+		mLoading.onLoadingComplete();
 		
 //		BoundingBox box = new BoundingBox();
 //		tankInstance.calculateBoundingBox(box);
 //		box.getHeight();
 //		box.getWidth();
 //		box.getDepth();
-		mLoading.onLoadingComplete();
 		}catch (Exception e){
 			e.getCause();
 		}
@@ -125,6 +112,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				}
 			} catch (Exception e) {
 				e.getCause();
+				e.printStackTrace();
 			}
 		}
 		modelBatch.end();
